@@ -15,7 +15,7 @@ class Database{
             
             try {
                 $dsn = "mysql:host=". $config["host"].";dbname=". $config["dbname"];
-                self::$connection = new \PDO($dsn, $config["user"], $config["password"]);
+                self::$connection = new \PDO($dsn, $config["username"], $config["password"]);
             } catch (\PDOException $e) {
                 die("DATABASE CONNECTION FAILED");
             }

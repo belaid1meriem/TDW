@@ -68,16 +68,17 @@ class Router {
             }
             
             if (preg_match($route['regex'], $requestPath, $matches)) {
+
                 $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
                 
                 $this->runMiddleware($route['middleware'], $request, function($request) use ($route, $params) {
                     $controllerClass = 'App\\Controllers\\' . $route['controller'];
-                    
+
                     if (!class_exists($controllerClass)) {
                         $this->handleError(500, "Controller not found: {$controllerClass}");
                         return;
                     }
-                    
+
                     $controller = new $controllerClass($request);
                     $action = $route['action'];
                     
@@ -85,7 +86,7 @@ class Router {
                         $this->handleError(500, "Method not found: {$action}");
                         return;
                     }
-                    
+  
                     call_user_func_array([$controller, $action], $params);
                 });
                 

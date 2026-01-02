@@ -25,13 +25,25 @@ class Request {
         
         return $method;
     }
-    
+
     public function path() {
         $path = $this->server['REQUEST_URI'] ?? '/';
+        
+        // Remove query string
         $position = strpos($path, '?');
         if ($position !== false) {
             $path = substr($path, 0, $position);
         }
+        
+        // Remove /tdw/public from the path if present
+        $basePath = '/tdw/public';
+        if (strpos($path, $basePath) === 0) {
+            $path = substr($path, strlen($basePath));
+        }
+        
+        // Ensure path always starts with /
+        $path = '/' . ltrim($path, '/');
+        
         return $path === '' ? '/' : $path;
     }
     
