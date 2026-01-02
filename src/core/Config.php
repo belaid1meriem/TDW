@@ -1,4 +1,7 @@
 <?php
+
+namespace Core;
+
 class Config {
     public static function database(){
         return [
@@ -8,4 +11,5 @@ class Config {
             'password'=>'admin'
         ];
     }
+
 }
