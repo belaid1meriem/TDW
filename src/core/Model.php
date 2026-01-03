@@ -6,7 +6,7 @@ abstract class Model
 {
     protected \PDO $db;
     protected string $table = '';
-    protected string $primaryKey = 'id';
+    protected string $id = 'id';
 
     public function __construct()
     {
@@ -72,7 +72,7 @@ abstract class Model
 
     public function find(mixed $id): array|false
     {
-        $sql = "SELECT * FROM {$this->table} WHERE {$this->primaryKey} = :id LIMIT 1";
+        $sql = "SELECT * FROM {$this->table} WHERE {$this->id} = :id LIMIT 1";
         
         try {
             $stmt = $this->db->prepare($sql);
@@ -130,7 +130,7 @@ abstract class Model
 
     public function updateById(mixed $id, array $data): int|false
     {
-        return $this->update($data, [$this->primaryKey => $id]);
+        return $this->update($data, [$this->id => $id]);
     }
 
     public function delete(array $conditions): int|false
@@ -155,7 +155,7 @@ abstract class Model
 
     public function deleteById(mixed $id): int|false
     {
-        return $this->delete([$this->primaryKey => $id]);
+        return $this->delete([$this->id => $id]);
     }
 
     public function count(array $conditions = []): int|false
