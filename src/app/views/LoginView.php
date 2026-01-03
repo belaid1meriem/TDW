@@ -66,7 +66,7 @@ class LoginView extends View
                     </form>
 
                     <div class="auth-links">
-                        <p>Don't have an account? <a href="/register">Register</a></p>
+                        <p>Don't have an account? <a href="register">Register</a></p>
                         <p><a href="/forgot-password">Forgot Password?</a></p>
                     </div>
                 </div>

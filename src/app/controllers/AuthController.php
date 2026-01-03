@@ -5,11 +5,13 @@ use Core\Validator;
 use App\Models\User;
 use App\Views\LoginView;
 use Core\Controller;
+use Core\Request;
 
 class AuthController extends Controller {
     private User $userModel;
 
-    public function __construct() {
+    public function __construct(Request $request) {
+        parent::__construct($request);
         $this->userModel = new User();
     }
 
