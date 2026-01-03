@@ -65,7 +65,14 @@ class AuthController extends Controller {
         // Set cookie for 30 days (persistent session)
         setcookie('remember_token', $token, time() + (86400 * 30), '/', '', false, true);
 
-        $this->redirectWithSuccess('/', 'Welcome back, ' . $user['username'] . '!');
+        if ($user['role'] === 'admin') {
+            $this->redirectWithSuccess('admin', 'Welcome back, ' . $user['username'] . '!');
+            return;
+        }
+        else {
+            $this->redirectWithSuccess('/', 'Welcome back, ' . $user['username'] . '!');
+            return;
+        }
     }
 
     public function register(){

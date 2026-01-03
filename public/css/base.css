@@ -49,6 +49,7 @@ body {
    ============================================ */
 
 .btn {
+    font-family: inherit;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -176,6 +177,7 @@ body {
 .input,
 .textarea,
 .select {
+    font-family: inherit;
     display: flex;
     width: 100%;
     border-radius: var(--radius);
@@ -299,7 +301,6 @@ body {
 
 .card-content {
     padding: 1.5rem;
-    padding-top: 0;
 }
 
 .card-footer {
@@ -307,6 +308,20 @@ body {
     align-items: center;
     padding: 1.5rem;
     padding-top: 0;
+}
+
+.clickable-card {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.clickable-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px 0 rgb(0 0 0 / 0.15);
+}
+
+.clickable-card:active {
+    transform: translateY(0);
 }
 
 /* ============================================
@@ -595,6 +610,82 @@ body {
     color: hsl(var(--muted-foreground));
 }
 
+/*
+    ============================================
+    LAYOUT STYLES
+    ============================================
+*/
+
+.main-layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: hsl(var(--muted) / 0.3);
+}
+
+
+/* Header */
+.header {
+    border-bottom: 1px solid hsl(var(--border));
+    padding: 1rem 0;
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-logo {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+    text-decoration: none;
+}
+
+.header-nav {
+    display: flex;
+    gap: 2rem;
+}
+
+.header-nav a {
+    color: hsl(var(--muted-foreground));
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.header-nav a:hover {
+    color: hsl(var(--foreground));
+}
+
+/* Main */
+main {
+    flex: 1;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* Footer */
+.footer {
+    border-top: 1px solid hsl(var(--border));
+    background-color: hsl(var(--muted) / 0.3);
+    padding: 2rem 0;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    text-align: center;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.875rem;
+}
+
 /* ============================================
    UTILITY CLASSES
    ============================================ */
@@ -661,3 +752,4 @@ body {
 .font-semibold {
     font-weight: 600;
 }
+

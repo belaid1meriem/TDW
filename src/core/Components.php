@@ -305,12 +305,16 @@ class Components
         $content = $config['content'] ?? '';
         $footer = $config['footer'] ?? '';
         $class = $config['class'] ?? '';
-
+        
+         $attrs = $config['attrs'] ?? [];  // Just this!
+    
         $cardClass = trim("card {$class}");
+        $attrStr = self::buildAttributes($attrs);
 
+        
         ob_start();
         ?>
-        <div class="<?= $cardClass ?>">
+        <div class="<?= $cardClass ?>" <?= $attrStr ?>>
             <?php if ($title || $description): ?>
                 <div class="card-header">
                     <?php if ($title): ?>

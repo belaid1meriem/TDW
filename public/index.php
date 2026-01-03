@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="css/base.css">
 <?php
 
 
@@ -14,6 +13,8 @@ $router = $app->router();
 $router->get('/', 'HomeController', 'index', 'home');
 $router->get('/login', 'AuthController', 'showLogin', 'login');
 $router->post('/login', 'AuthController', 'login');
+$router->get('/admin', 'AdminController', 'dashboard', 'admin');
+$router->get('/admin/users', 'UsersController', 'index', 'admin.users');
 // $router->get('/register', 'AuthController', 'showRegister', 'register');
 // $router->post('/register', 'AuthController', 'register');
 // $router->post('/logout', 'AuthController', 'logout');

@@ -37,6 +37,14 @@ class User extends Model
     }
 
     /**
+     * Find user by email
+     */
+    public function role(string $email): array|false
+    {
+        return $this->findBy(['email' => $email])['role'];
+    }
+
+    /**
      * Verify user credentials
      */
     public function verify(string $identifier, string $password): array|false
