@@ -96,6 +96,8 @@ class Router {
         
         $this->handleError(404, "Page not found");
     }
+
+   
     
     private function runMiddleware($middleware, $request, $finalHandler) {
         $pipeline = array_reduce(

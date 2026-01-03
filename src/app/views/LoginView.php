@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Views\Auth;
+namespace App\Views;
 
 use Core\View;
 
@@ -15,7 +15,7 @@ class LoginView extends View
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Login</title>
-            <link rel="stylesheet" href="/css/auth.css">
+            <link rel="stylesheet" href="css/auth.css">
         </head>
         <body>
             <div class="auth-container">
@@ -34,7 +34,7 @@ class LoginView extends View
                         </div>
                     <?php endif; ?>
 
-                    <form method="POST" action="/login">
+                    <form method="POST" action="login">
                         <div class="form-group">
                             <label for="identifier">Email or Username</label>
                             <input 

@@ -2,16 +2,23 @@
 namespace App\Controllers;
 use Core\Session;
 use Core\Validator;
+use App\Models\User;
+use App\Views\LoginView;
+use Core\Controller;
 
-class AuthController extends \Core\Controller {
-    private \App\Models\User $userModel= new \App\Models\User();
+class AuthController extends Controller {
+    private User $userModel;
+
+    public function __construct() {
+        $this->userModel = new User();
+    }
 
 
     public function showLogin() {
-        $view = new \App\Views\Auth\LoginView();
+        $view = new LoginView();
         $this->render($view);
     }
-    
+
     /**
      * Handle login
      */

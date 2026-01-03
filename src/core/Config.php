@@ -6,9 +6,10 @@ class Config {
     public static function database(){
         return [
             'host'=>'localhost',
-            'dbname'=>'test',
-            'username'=>'admin',
-            'password'=>'admin'
+            'port'=>'3307',
+            'dbname'=>'tdw',
+            'username'=>'root',
+            'password'=>''
         ];
     }
 
