@@ -1,5 +1,5 @@
 <?php
-
+define('BASE_PATH', '/tdw/public');
 
 use Core\Application;
 

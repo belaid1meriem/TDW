@@ -38,7 +38,7 @@ abstract class Model
         }
     }
 
-    public function select(
+    public function selectOld(
         array $conditions = [], 
         array $columns = ['*'], 
         string $orderBy = '', 
@@ -59,10 +59,83 @@ abstract class Model
         if ($limit !== null) {
             $sql .= " LIMIT $limit OFFSET $offset";
         }
-        
         try {
             $stmt = $this->db->prepare($sql);
             $stmt->execute($conditions);
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            error_log("Select error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function select(
+        array $conditions = [], 
+        array $columns = ['*'], 
+        string $orderBy = '', 
+        ?int $limit = null, 
+        int $offset = 0,
+        string $logic = 'AND',
+        string $defaultOperator = '='
+    ): array|false {
+        $sql = "SELECT " . implode(", ", $columns) . " FROM {$this->table}";
+        $params = [];
+        
+        if (!empty($conditions)) {
+            $where = [];
+            
+            
+            foreach ($conditions as $col => $value) {
+                // Check if value is an array with operator
+                if (is_array($value) && isset($value['operator'])) {
+                    $operator = strtoupper($value['operator']);
+                    $actualValue = $value['value'];
+                    
+                    $paramName = str_replace('.', '_', $col);
+                    
+                    if ($operator === 'LIKE' || $operator === 'NOT LIKE') {
+                        $where[] = "$col $operator :$paramName";
+                        $params[$paramName] = "%{$actualValue}%";
+                    } elseif ($operator === 'IN') {
+                        $placeholders = [];
+                        foreach ((array)$actualValue as $i => $v) {
+                            $placeholders[] = ":{$paramName}_{$i}";
+                            $params["{$paramName}_{$i}"] = $v;
+                        }
+                        $where[] = "$col IN (" . implode(',', $placeholders) . ")";
+                    } elseif ($operator === 'BETWEEN') {
+                        $where[] = "$col BETWEEN :{$paramName}_min AND :{$paramName}_max";
+                        $params["{$paramName}_min"] = $actualValue[0];
+                        $params["{$paramName}_max"] = $actualValue[1];
+                    } elseif ($operator === 'IS NULL' || $operator === 'IS NOT NULL') {
+                        $where[] = "$col $operator";
+                    } else {
+                        // Other operators: >, <, >=, <=, !=
+                        $where[] = "$col $operator :$paramName";
+                        $params[$paramName] = $actualValue;
+                    }
+                } else {
+                    // Simple value - use default operator (=)
+                    $paramName = str_replace('.', '_', $col);
+                    $where[] = "$col $defaultOperator :$paramName";
+                    $params[$paramName] = $value;
+                }
+            }
+            
+            $sql .= " WHERE " . implode(" $logic ", $where);
+        }
+        
+        if ($orderBy) {
+            $sql .= " ORDER BY $orderBy";
+        }
+        
+        if ($limit !== null) {
+            $sql .= " LIMIT $limit OFFSET $offset";
+        }
+        
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
             error_log("Select error: " . $e->getMessage());

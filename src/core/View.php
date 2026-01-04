@@ -44,4 +44,11 @@ abstract class View {
         return Session::hasFlash($key);
     }
 
+    /**
+     * Generate asset URL
+     */
+    protected function asset($path) {
+        return (defined('BASE_PATH') ? BASE_PATH : '') . '/' . ltrim($path, '/');
+    }
+
 }

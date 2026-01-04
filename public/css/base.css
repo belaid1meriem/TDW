@@ -753,3 +753,6 @@ main {
     font-weight: 600;
 }
 
+.bg-background {
+    background-color: hsl(var(--background));
+}

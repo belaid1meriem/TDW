@@ -400,6 +400,121 @@ class Components
         <?php
         return ob_get_clean();
     }
+    
+
+
+    /**
+     * FilterForm Component
+     * Independent filtering form that submits via GET request
+     * 
+     * @param array $config [
+     *   'action' => '/users',
+     *   'method' => 'GET',
+     *   'fields' => [
+     *     [
+     *       'name' => 'role',
+     *       'label' => 'Responsable',
+     *       'type' => 'select|text|date|email|number',
+     *       'options' => ['value' => 'label'],  // For select type
+     *       'placeholder' => 'Tous',
+     *       'value' => 'current_value'
+     *     ]
+     *   ],
+     *   'title' => 'Filtres',
+     *   'description' => 'Filter description'
+     * ]
+     */
+    public static function FilterForm(array $config): string
+    {
+        $action = $config['action'] ?? '';
+        $method = strtoupper($config['method'] ?? 'GET');
+        $fields = $config['fields'] ?? [];
+        $title = $config['title'] ?? 'Filtres';
+        $description = $config['description'] ?? '';
+
+        ob_start();
+        
+        // Build form fields content
+        ob_start();
+        ?>
+        <form method="<?= $method ?>" action="<?= htmlspecialchars($action) ?>">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                <?php foreach ($fields as $field): ?>
+                    <?= self::renderFilterFormField($field) ?>
+                <?php endforeach; ?>
+            </div>
+            
+            <div class="flex  gap-4 mt-4">
+                <?= self::Button([
+                    'text' => 'Filtrer',
+                    'type' => 'submit',
+                    'variant' => 'default',
+                    'class' => 'w-full'
+                ]) ?>
+                
+                <?php
+                // Always use current page without query string for reset
+                $resetUrl = strtok($_SERVER['REQUEST_URI'], '?');
+                ?>
+                <a href="<?= htmlspecialchars($resetUrl) ?>" class="btn btn-outline w-full" style="text-align: center;">
+                    Réinitialiser
+                </a>
+
+                <!-- <?= self::Button([
+                    'text' => 'Réinitialiser',
+                    'type' => 'button',
+                    'variant' => 'outline',
+                    'class' => 'w-full',
+                    'attrs' => [
+                        'onclick' => "window.location.href='" . htmlspecialchars($action) . "'"
+                    ]
+                ]) ?>  -->
+            </div>
+        </form>
+        <?php
+        $formContent = ob_get_clean();
+
+        // Wrap in card
+        echo self::Card([
+            'title' => $title,
+            'description' => $description,
+            'content' => $formContent,
+        ]);
+
+        return ob_get_clean();
+    }
+
+    /**
+     * Render individual filter form field
+     */
+    private static function renderFilterFormField(array $field): string
+    {
+        $type = $field['type'] ?? 'text';
+        $name = $field['name'] ?? '';
+        $label = $field['label'] ?? '';
+        $placeholder = $field['placeholder'] ?? '';
+        $value = $field['value'] ?? '';
+        $options = $field['options'] ?? [];
+
+        if ($type === 'select') {
+            return self::Select([
+                'name' => $name,
+                'label' => $label,
+                'options' => $options,
+                'placeholder' => $placeholder,
+                'value' => $value
+            ]);
+        } else {
+            return self::Input([
+                'type' => $type,
+                'name' => $name,
+                'label' => $label,
+                'placeholder' => $placeholder,
+                'value' => $value
+            ]);
+        }
+    }
+
 
     /**
      * Badge Component
