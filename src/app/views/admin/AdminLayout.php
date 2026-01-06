@@ -1,6 +1,6 @@
 <?php
-namespace App\Views;
-
+namespace App\Views\Admin;
+use App\Views\BaseLayout;
 
 abstract class AdminLayout extends BaseLayout {
 

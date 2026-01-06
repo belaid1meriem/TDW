@@ -1,6 +1,6 @@
 <?php
-namespace App\Views;
-use App\Views\AdminLayout;
+namespace App\Views\Admin\Users;
+use App\Views\Admin\AdminLayout;
 use Core\Components;
 
 class UsersView extends AdminLayout
