@@ -7,91 +7,202 @@ use Core\Model;
 class UserModel extends Model
 {
     protected string $table = 'users';
-    protected string $primaryKey = 'id';
+    protected string $id = 'id';
 
     /**
-     * Create a new user
+     * Get all active users
      */
-    public function register(array $data): string|false
+    public function getActiveUsers()
     {
-        // Hash the password
-        $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
-        
-        return $this->create($data);
+        return $this->select(['account_status' => 'active'], ['*'], 'created_at DESC');
     }
 
     /**
-     * Find user by email
+     * Get user by username
      */
-    public function findByEmail(string $email): array|false
-    {
-        return $this->findBy(['email' => $email]);
-    }
-
-    /**
-     * Find user by username
-     */
-    public function findByUsername(string $username): array|false
+    public function findByUsername($username)
     {
         return $this->findBy(['username' => $username]);
     }
 
     /**
-     * Find user by email
+     * Get user by email
      */
-    public function role(string $email): array|false
+    public function findByEmail($email)
     {
-        return $this->findBy(['email' => $email])['role'];
+        return $this->findBy(['email' => $email]);
+    }
+
+
+
+    /**
+     * Search users by keyword
+     */
+    public function search($keyword, $limit = 10, $offset = 0)
+    {
+        $searchTerm = "%{$keyword}%";
+        $sql = "SELECT * FROM {$this->table} 
+                WHERE username LIKE :search 
+                OR email LIKE :search 
+                OR first_name LIKE :search 
+                OR last_name LIKE :search
+                OR poste LIKE :search
+                OR grade LIKE :search
+                ORDER BY created_at DESC
+                LIMIT :limit OFFSET :offset";
+
+        return $this->query($sql, [
+            'search' => $searchTerm,
+            'limit' => $limit,
+            'offset' => $offset
+        ]);
     }
 
     /**
-     * Verify user credentials
+     * Get users by grade
      */
-    public function verify(string $identifier, string $password): array|false
+    public function getUsersByGrade($grade)
     {
-        // Try to find by email or username
+        return $this->select(['grade' => $grade], ['*'], 'created_at DESC');
+    }
+
+    /**
+     * Get users by research domain
+     */
+    public function getUsersByDomain($domain)
+    {
+        return $this->select(['domain_research' => $domain], ['*'], 'created_at DESC');
+    }
+
+    /**
+     * Verify user password
+     */
+    public function verifyPassword($identifier, $password)
+    {
         $user = $this->findByEmail($identifier);
-        
         if (!$user) {
-            $user = $this->findByUsername($identifier);
+            return $this->findByUsername($identifier);
         }
-        
-        if ($user && password_verify($password, $user['password'])) {
-            return $user;
-        }
-        
-        return false;
+        return password_verify($password, $user['password']) ? $user : false;
     }
 
     /**
-     * Update remember token
+     * Update user password
      */
-    public function updateRememberToken(int $userId, ?string $token): bool
+    public function updatePassword($userId, $newPassword)
     {
-        return $this->updateById($userId, ['remember_token' => $token]) !== false;
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+        return $this->updateById($userId, ['password' => $hashedPassword]);
     }
 
     /**
-     * Find user by remember token
+     * Update user password
      */
-    public function findByRememberToken(string $token): array|false
+    public function updateRememberToken($userId, $token)
     {
-        return $this->findBy(['remember_token' => $token]);
+        return $this->updateById($userId, ['remember_token' => $token]);
+    }
+
+
+    /**
+     * Suspend user account
+     */
+    public function suspend($userId)
+    {
+        return $this->updateById($userId, ['account_status' => 'suspended']);
     }
 
     /**
-     * Check if email exists
+     * Activate user account
      */
-    public function emailExists(string $email): bool
+    public function activate($userId)
     {
-        return $this->exists(['email' => $email]);
+        return $this->updateById($userId, ['account_status' => 'active']);
     }
 
     /**
-     * Check if username exists
+     * Get user statistics
      */
-    public function usernameExists(string $username): bool
+    public function getStatistics()
     {
-        return $this->exists(['username' => $username]);
+        $stats = [];
+
+        // Total users
+        $stats['total'] = $this->count();
+
+        // Active users
+        $stats['active'] = $this->count(['account_status' => 'active']);
+
+        // Suspended users
+        $stats['suspended'] = $this->count(['account_status' => 'suspended']);
+
+        // Users by grade
+        $gradesSql = "SELECT grade, COUNT(*) as count 
+                      FROM {$this->table} 
+                      WHERE grade IS NOT NULL AND grade != ''
+                      GROUP BY grade 
+                      ORDER BY count DESC";
+        $stats['by_grade'] = $this->query($gradesSql);
+
+        // Recent users (last 7 days)
+        $weekAgo = date('Y-m-d H:i:s', strtotime('-7 days'));
+        $recentSql = "SELECT COUNT(*) as count 
+                      FROM {$this->table} 
+                      WHERE created_at >= :date";
+        $recentResult = $this->query($recentSql, ['date' => $weekAgo]);
+        $stats['recent'] = $recentResult[0]['count'] ?? 0;
+
+        return $stats;
+    }
+
+    /**
+     * Get all unique grades
+     */
+    public function getGrades()
+    {
+        $sql = "SELECT DISTINCT grade 
+                FROM {$this->table} 
+                WHERE grade IS NOT NULL AND grade != '' 
+                ORDER BY grade";
+        $result = $this->query($sql);
+        return array_column($result, 'grade');
+    }
+
+    /**
+     * Get all unique research domains
+     */
+    public function getDomains()
+    {
+        $sql = "SELECT DISTINCT domain_research 
+                FROM {$this->table} 
+                WHERE domain_research IS NOT NULL AND domain_research != '' 
+                ORDER BY domain_research";
+        $result = $this->query($sql);
+        return array_column($result, 'domain_research');
+    }
+
+    /**
+     * Soft delete user
+     */
+    public function softDelete($userId)
+    {
+        return $this->updateById($userId, ['deleted_at' => date('Y-m-d H:i:s')]);
+    }
+
+    /**
+     * Restore soft deleted user
+     */
+    public function restore($userId)
+    {
+        return $this->updateById($userId, ['deleted_at' => null]);
+    }
+
+    /**
+     * Get only non-deleted users
+     */
+    public function getActiveRecords($conditions = [], $orderBy = 'created_at DESC', $limit = null, $offset = 0)
+    {
+        $conditions['deleted_at'] = ['operator' => 'IS NULL', 'value' => null];
+        return $this->select($conditions, ['*'], $orderBy, $limit, $offset);
     }
 }

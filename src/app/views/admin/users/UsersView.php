@@ -17,7 +17,15 @@ class UsersView extends AdminLayout
     {
         ?>
         <main class="flex flex-col gap-6">
-            <h2>Gestion des utilisateurs et rôles</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Gestion des utilisateurs et rôles</h2>
+                <?= Components::Button([
+                    'text' => 'Ajouter un utilisateur',
+                    'variant' => 'primary',
+                    'href' => 'users/create'
+                ]); ?>
+            </div>
+            
             <?= $this->renderFilterForm(); ?>
             <?= $this->renderUserList($this->users); ?>     
         </main>
@@ -204,7 +212,7 @@ class UsersView extends AdminLayout
     private function getStatusColumn()
     {
         return [
-            'key' => 'status',
+            'key' => 'account_status',
             'label' => 'Status',
             'render' => function($value) {
                 return $this->renderStatusBadge($value);
@@ -235,12 +243,12 @@ class UsersView extends AdminLayout
 
     private function renderUserActions($userId, $user)
     {
-        $viewButton = Components::Button([
-            'text' => 'Activer',
-            'size' => 'sm',
-            'variant' => 'secondary',
-            'href' => '/users/view/' . $userId
-        ]);
+        // $viewButton = Components::Button([
+        //     'text' => 'Activer',
+        //     'size' => 'sm',
+        //     'variant' => 'secondary',
+        //     'href' => '/users/view/' . $userId
+        // ]);
         
         $editButton = Components::Button([
             'text' => 'Modifier',
@@ -261,7 +269,6 @@ class UsersView extends AdminLayout
         ob_start();
         ?>
         <div class="flex gap-2">
-            <?= $viewButton ?>
             <?= $editButton ?>
             <?= $deleteButton ?>
         </div>

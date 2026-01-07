@@ -2,7 +2,7 @@
 namespace App\Controllers;
 
 use Core\Controller;
-use App\Views\AdminView;
+use App\Views\Admin\AdminView;
 
 class AdminController extends Controller
 {

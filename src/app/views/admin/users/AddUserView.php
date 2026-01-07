@@ -1,6 +1,7 @@
 <?php
 namespace App\Views\Admin\Users;
 use App\Views\Admin\AdminLayout;
+use Core\Session;
 use Core\Components;
 
 class AddUserView extends AdminLayout
@@ -17,16 +18,24 @@ class AddUserView extends AdminLayout
                     'href' => '/admin/users'
                 ]) ?>
             </div>
-
-            <?php if ($this->hasFlash('error')): ?>
+            
+            <?php if ($this->hasFlash('errors')): ?>
                 <div class="alert-container">
-                    <?= Components::Alert([
-                        'variant' => 'destructive',
-                        'message' => $this->flash('error'),
-                        'dismissible' => true
-                    ]) ?>
+                    <?php 
+                    $errors = $this->flash('errors'); 
+                    foreach ($errors as $fieldErrors) {
+                        foreach ($fieldErrors as $error) {
+                            echo Components::Alert([
+                                'variant' => 'destructive',
+                                'message' => $error,
+                                'dismissible' => true
+                            ]);
+                        }
+                    }
+                    ?>
                 </div>
             <?php endif; ?>
+
 
             <?php if ($this->hasFlash('success')): ?>
                 <div class="alert-container">
@@ -196,7 +205,9 @@ class AddUserView extends AdminLayout
                     'admin' => 'Administrateur',
                     'enseignant' => 'Enseignant',
                     'chercheur' => 'Chercheur',
-                    'doctorant' => 'Doctorant'
+                    'doctorant' => 'Doctorant',
+                    'etudiant' => 'Étudiant',
+                    'invite' => 'Invité'
                 ],
                 'value' => $this->old('role'),
                 'error' => $this->hasError('role') ? $this->error('role') : '',
@@ -223,15 +234,14 @@ class AddUserView extends AdminLayout
             ]) ?>
 
             <?= Components::Select([
-                'name' => 'status',
+                'name' => 'account_status',
                 'label' => 'Statut',
                 'options' => [
                     'actif' => 'Actif',
                     'suspendu' => 'Suspendu',
-                    'inactif' => 'Inactif'
                 ],
-                'value' => $this->old('status', 'actif'),
-                'error' => $this->hasError('status') ? $this->error('status') : '',
+                'value' => $this->old('account_status', 'actif'),
+                'error' => $this->hasError('account_status') ? $this->error('account_status') : '',
                 'required' => true
             ]) ?>
         </div>
@@ -245,11 +255,11 @@ class AddUserView extends AdminLayout
         ?>
         <div style="display: grid; gap: 1rem;">
             <?= Components::Textarea([
-                'name' => 'domaine_recherche',
+                'name' => 'domain_research',
                 'label' => 'Domaine de recherche',
                 'placeholder' => 'Intelligence Artificielle, Machine Learning, Réseaux de neurones...',
-                'value' => $this->old('domaine_recherche'),
-                'error' => $this->hasError('domaine_recherche') ? $this->error('domaine_recherche') : '',
+                'value' => $this->old('domain_research'),
+                'error' => $this->hasError('domain_research') ? $this->error('domain_research') : '',
                 'rows' => 3
             ]) ?>
 
@@ -260,15 +270,6 @@ class AddUserView extends AdminLayout
                 'value' => $this->old('bio'),
                 'error' => $this->hasError('bio') ? $this->error('bio') : '',
                 'rows' => 4
-            ]) ?>
-
-            <?= Components::Textarea([
-                'name' => 'documents_personnels',
-                'label' => 'Documents personnels',
-                'placeholder' => 'CV, publications, certifications (URLs ou descriptions)',
-                'value' => $this->old('documents_personnels'),
-                'error' => $this->hasError('documents_personnels') ? $this->error('documents_personnels') : '',
-                'rows' => 3
             ]) ?>
         </div>
         <?php

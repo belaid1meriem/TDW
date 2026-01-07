@@ -2,17 +2,18 @@
 namespace App\Controllers;
 use Core\Session;
 use Core\Validator;
-use App\Models\User;
+use App\Models\UserModel;
 use App\Views\LoginView;
 use Core\Controller;
 use Core\Request;
+use App\Models\RoleModel;
 
 class AuthController extends Controller {
-    private User $userModel;
+    private UserModel $userModel;
 
     public function __construct(Request $request) {
         parent::__construct($request);
-        $this->userModel = new User();
+        $this->userModel = new UserModel();
     }
 
 
@@ -43,7 +44,7 @@ class AuthController extends Controller {
         $identifier = $this->request->input('identifier');
         $password = $this->request->input('password');
 
-        $user = $this->userModel->verify($identifier, $password);
+        $user = $this->userModel->verifyPassword($identifier, $password);
 
         if (!$user) {
             Session::flash('error', 'Invalid credentials');
@@ -65,7 +66,11 @@ class AuthController extends Controller {
         // Set cookie for 30 days (persistent session)
         setcookie('remember_token', $token, time() + (86400 * 30), '/', '', false, true);
 
-        if ($user['role'] === 'admin') {
+        // Redirect based on role
+        $roleModel = new RoleModel();
+        $role = $roleModel->getRoleName($user['role_id']);
+        
+        if ($role === 'admin') {
             $this->redirectWithSuccess('admin', 'Welcome back, ' . $user['username'] . '!');
             return;
         }
@@ -75,45 +80,6 @@ class AuthController extends Controller {
         }
     }
 
-    public function register(){
-        // Validate input
-        $validator = Validator::make($this->request->all(), [
-            'username' => 'required|min:3|max:50',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8',
-            'password_confirmation' => 'required|same:password'
-        ]);
-
-        if ($validator->fails()) {
-            Session::flash('errors', $validator->errors());
-            Session::flash('old', $this->request->except(['password', 'password_confirmation']));
-            $this->back();
-            return;
-        }
-
-        // Create user
-        $userId = $this->userModel->register([
-            'username' => $this->request->input('username'),
-            'email' => $this->request->input('email'),
-            'password' => $this->request->input('password')
-        ]);
-
-        if (!$userId) {
-            Session::flash('error', 'Registration failed. Please try again.');
-            Session::flash('old', $this->request->except(['password', 'password_confirmation']));
-            $this->back();
-            return;
-        }
-
-        // Auto-login after registration
-        $user = $this->userModel->find($userId);
-        Session::set('user_id', $user['id']);
-        Session::set('user_email', $user['email']);
-        Session::set('user_username', $user['username']);
-        Session::regenerate();
-
-        $this->redirectWithSuccess('/', 'Registration successful! Welcome, ' . $user['username'] . '!');
-    }
 
     /**
      * Handle logout

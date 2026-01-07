@@ -69,7 +69,7 @@ class LoginView extends View
             </style>
         </head>
         <body>
-            <div class="main-container">
+            <div class="main-layout">
                 <?php
                 echo Components::Card([
                     'class' => 'auth-card',

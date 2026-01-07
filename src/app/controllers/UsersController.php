@@ -28,7 +28,7 @@ class UsersController extends Controller
         $filters = array_filter($filters, fn($v) => $v !== '');
 
         $users = $this->userModel->select(conditions: $filters);
-
+        echo "<script>console.log('".json_encode($users)."');</script>";
         $view = new UsersView($users);
         $this->render($view);
     }
@@ -44,15 +44,15 @@ class UsersController extends Controller
         // Validate input
         $validator = Validator::make($this->request->all(), [
             'email' => 'required|email|unique:users,email',
-            'username' => 'required|min:3|max:50|unique:users,username',
-            'password' => 'required|min:8',
+            'username' => 'required|unique:users,username',
+            'password' => 'required',
             'password_confirmation' => 'required|same:password',
             'first_name' => 'required|max:50',
             'last_name' => 'required|max:50',
-            'role' => 'required|in:admin,enseignant,chercheur,doctorant',
-            'status' => 'required|in:actif,suspendu,inactif',
+            'role' => 'required|in:admin,enseignant,chercheur,doctorant,etudiant,invite',
+            'account_status' => 'required|in:actif,suspendu',
             'grade' => 'max:50',
-            'poste' => 'max:100'
+            'poste' => 'max:100',
         ]);
 
         if ($validator->fails()) {
@@ -86,13 +86,12 @@ class UsersController extends Controller
             'first_name' => $this->request->input('first_name'),
             'last_name' => $this->request->input('last_name'),
             'role' => $this->request->input('role'),
-            'status' => $this->request->input('status', 'actif'),
+            'account_status' => $this->request->input('account_status', 'actif'),
             'grade' => $this->request->input('grade'),
             'poste' => $this->request->input('poste'),
             'photo' => $photoPath,
-            'domaine_recherche' => $this->request->input('domaine_recherche'),
+            'domain_research' => $this->request->input('domain_research'),
             'bio' => $this->request->input('bio'),
-            'documents_personnels' => $this->request->input('documents_personnels')
         ];
 
         // Create user
@@ -105,7 +104,7 @@ class UsersController extends Controller
             return;
         }
 
-        $this->redirectWithSuccess('admin/users', 'User created successfully!');
+        $this->redirectWithSuccess('', 'User created successfully!');
     }
 
     public function edit($id)
