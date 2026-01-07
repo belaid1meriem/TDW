@@ -15,7 +15,7 @@ class AddUserView extends AdminLayout
                 <?= Components::Button([
                     'text' => '← Retour',
                     'variant' => 'outline',
-                    'href' => '/admin/users'
+                    'href' => $this->asset('admin/users')
                 ]) ?>
             </div>
             

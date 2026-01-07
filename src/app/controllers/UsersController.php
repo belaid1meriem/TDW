@@ -28,7 +28,7 @@ class UsersController extends Controller
         $filters = array_filter($filters, fn($v) => $v !== '');
 
         $users = $this->userModel->select(conditions: $filters);
-        echo "<script>console.log('".json_encode($users)."');</script>";
+        
         $view = new UsersView($users);
         $this->render($view);
     }
@@ -104,10 +104,10 @@ class UsersController extends Controller
             return;
         }
 
-        $this->redirectWithSuccess('', 'User created successfully!');
+        $this->redirectWithSuccess(BASE_PATH . '/admin/users', 'User created successfully!');
     }
 
-    public function edit($id)
+    public function editOld($id)
     {
         $user = $this->userModel->find($id);
 
@@ -120,7 +120,7 @@ class UsersController extends Controller
         $this->render($view);
     }
 
-    public function update($id)
+    public function updateOld($id)
     {
         $user = $this->userModel->find($id);
 
@@ -211,6 +211,111 @@ class UsersController extends Controller
         $this->redirectWithSuccess('/admin/users', 'User updated successfully!');
     }
 
+
+    public function edit($id)
+    {
+        $user = $this->userModel->find($id);
+
+        if (!$user) {
+            $this->redirectWithError(BASE_PATH . '/admin/users', 'User not found.');
+            return;
+        }
+
+        $view = new EditUserView($user);
+        $this->render($view);
+    }
+
+    public function update($id)
+    {
+        $user = $this->userModel->find($id);
+
+        if (!$user) {
+            $this->redirectWithError(BASE_PATH . '/admin/users', 'User not found.');
+            return;
+        }
+
+        // Build validation rules
+        $rules = [
+            'email' => "required|email|unique:users,email,{$id}",
+            'username' => "required|unique:users,username,{$id}",
+            'first_name' => 'required|max:50',
+            'last_name' => 'required|max:50',
+            'role' => 'required|in:admin,enseignant,chercheur,doctorant,etudiant,invite',
+            'account_status' => 'required|in:actif,suspendu',
+            'grade' => 'max:50',
+            'poste' => 'max:100'
+        ];
+
+        // Only validate password if provided
+        if ($this->request->input('password')) {
+            $rules['password'] = 'min:8';
+            $rules['password_confirmation'] = 'same:password';
+        }
+
+        $validator = Validator::make($this->request->all(), $rules);
+
+        if ($validator->fails()) {
+            Session::flash('errors', $validator->errors());
+            Session::flash('old', $this->request->except(['password', 'password_confirmation']));
+            $this->back();
+            return;
+        }
+
+        // Handle photo upload
+        $photoPath = $user['photo'];
+        if ($this->request->hasFile('photo')) {
+            try {
+                $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+                $newPhotoPath = $this->uploadFile('photo', 'public/images/', $allowedTypes);
+                
+                // Delete old photo if exists
+                if ($photoPath && file_exists("public/images/{$photoPath}")) {
+                    unlink("public/images/{$photoPath}");
+                }
+                
+                $photoPath = basename($newPhotoPath);
+            } catch (\Exception $e) {
+                Session::flash('error', 'Photo upload failed: ' . $e->getMessage());
+                Session::flash('old', $this->request->except(['password', 'password_confirmation']));
+                $this->back();
+                return;
+            }
+        }
+
+        // Prepare update data
+        $userData = [
+            'email' => $this->request->input('email'),
+            'username' => $this->request->input('username'),
+            'first_name' => $this->request->input('first_name'),
+            'last_name' => $this->request->input('last_name'),
+            'role' => $this->request->input('role'),
+            'account_status' => $this->request->input('account_status'),
+            'grade' => $this->request->input('grade'),
+            'poste' => $this->request->input('poste'),
+            'photo' => $photoPath,
+            'domain_research' => $this->request->input('domain_research'),
+            'bio' => $this->request->input('bio'),
+        ];
+
+        // Update password only if provided
+        if ($this->request->input('password')) {
+            $userData['password'] = password_hash($this->request->input('password'), PASSWORD_BCRYPT);
+        }
+
+        // Update user
+        $result = $this->userModel->updateById($id, $userData);
+
+        if ($result === false) {
+            Session::flash('error', 'Failed to update user. Please try again.');
+            Session::flash('old', $this->request->except(['password', 'password_confirmation']));
+            $this->back();
+            return;
+        }
+
+        $this->redirectWithSuccess(BASE_PATH . '/admin/users', 'User updated successfully!');
+    }
+
+
     public function delete($id)
     {
         $user = $this->userModel->find($id);
@@ -230,24 +335,12 @@ class UsersController extends Controller
         $result = $this->userModel->deleteById($id);
 
         if ($result === false) {
-            $this->redirectWithError('/admin/users', 'Failed to delete user.');
+            $this->redirectWithError(BASE_PATH . '/admin/users', 'Failed to delete user.');
             return;
         }
 
-        $this->redirectWithSuccess('/admin/users', 'User deleted successfully!');
+        $this->redirectWithSuccess(BASE_PATH . '/admin/users', 'User deleted successfully!');
     }
 
-    public function view($id)
-    {
-        $user = $this->userModel->find($id);
-
-        if (!$user) {
-            $this->redirectWithError('/admin/users', 'User not found.');
-            return;
-        }
-
-        $view = new ViewUserView($user);
-        $this->render($view);
-    }
 }
 ?>

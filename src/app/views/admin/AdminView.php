@@ -21,7 +21,7 @@ class AdminView extends AdminLayout
         ob_start();
         $titles = [
             ["Gestion des utilisateurs et rôles", "admin/users"],
-            ["Gestion des équipes", "admin/teams"],
+            ["Gestion des équipes", "admin/equipes"],
             ["Gestion des projets de recherche", "admin/projects"],
             ["Gestion des équipements et ressources", "admin/equipment"],
             ["Gestion des publications et base documentaire", "admin/publications"],

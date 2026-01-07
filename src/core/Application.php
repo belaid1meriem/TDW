@@ -40,6 +40,6 @@ class Application {
     private function handleException(\Exception $e) {
         http_response_code(500);
         echo "<h1>500 - Internal Server Error</h1>";
-        error_log($e->getMessage() . "\n" . $e->getTraceAsString());
+        echo $e->getMessage() . "\n" . $e->getTraceAsString();
     }
 }
