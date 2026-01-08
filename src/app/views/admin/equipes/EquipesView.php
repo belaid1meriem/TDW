@@ -29,6 +29,7 @@ class EquipesView extends AdminLayout
                 </div>
             <?php endif; ?>
             <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Gestion des équipes</h2>
                 <?= Components::Button([
                     'text' => 'Ajouter une équipe',
                     'variant' => 'primary',

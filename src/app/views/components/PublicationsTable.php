@@ -167,54 +167,92 @@ class PublicationsTable {
         ];
     }
 
+
     private function renderPublicationActions($publicationId, $publication)
     {
-        $viewButton = Components::Button([
-            'text' => 'View',
-            'size' => 'sm',
-            'variant' => 'outline',
-            'href' => BASE_PATH . '/admin/publications/view/' . $publicationId
-        ]);
-        
-        $editButton = Components::Button([
-            'text' => 'Edit',
-            'size' => 'sm',
-            'variant' => 'secondary',
-            'href' => BASE_PATH . '/admin/publications/edit/' . $publicationId
-        ]);
-        
-        $deleteButton = Components::Button([
-            'text' => 'Delete',
-            'size' => 'sm',
-            'variant' => 'destructive',
-            'attrs' => [
-                'onclick' => $this->getDeleteConfirmation($publicationId, $publication['title'])
-            ]
-        ]);
-        
+        $buttons = [];
+
+        // Show buttons depending on the status
+        switch ($publication['status']) {
+            case 'pending':
+                $buttons[] = Components::Button([
+                    'text' => 'Valider',
+                    'size' => 'sm',
+                    'variant' => 'secondary',
+                    'attrs' => ['onclick' => $this->getValidateConfirmation($publicationId, $publication['title'])]
+                ]);
+                $buttons[] = Components::Button([
+                    'text' => 'Rejeter',
+                    'size' => 'sm',
+                    'variant' => 'destructive',
+                    'attrs' => ['onclick' => $this->getRejectConfirmation($publicationId, $publication['title'])]
+                ]);
+                break;
+
+            case 'validated':
+                $buttons[] = Components::Button([
+                    'text' => 'Rejeter',
+                    'size' => 'sm',
+                    'variant' => 'destructive',
+                    'attrs' => ['onclick' => $this->getRejectConfirmation($publicationId, $publication['title'])]
+                ]);
+                break;
+
+            case 'rejected':
+                $buttons[] = Components::Button([
+                    'text' => 'Valider',
+                    'size' => 'sm',
+                    'variant' => 'secondary',
+                    'attrs' => ['onclick' => $this->getValidateConfirmation($publicationId, $publication['title'])]
+                ]);
+                break;
+        }
+
         ob_start();
         ?>
         <div class="flex gap-2">
-            <?= $viewButton ?>
-            <?= $editButton ?>
-            <?= $deleteButton ?>
+            <?= implode('', $buttons) ?>
         </div>
-        <?php   
+        <?php
         return ob_get_clean();
     }
 
-    private function getDeleteConfirmation($publicationId, $title)
+
+    private function getRejectConfirmation($publicationId, $title)
     {
         return sprintf(
-            "if(confirm('Delete publication \"%s\"?')) {
+            "if(confirm('Reject publication \"%s\"?')) {
                 var form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '%s/admin/publications/delete/%d';
+                form.action = '%s/admin/publications/reject/%d';
 
                 var method = document.createElement('input');
                 method.type = 'hidden';
                 method.name = '_method';
-                method.value = 'DELETE';
+                method.value = 'POST';
+                form.appendChild(method);
+
+                document.body.appendChild(form);
+                form.submit();
+            }",
+            htmlspecialchars($title, ENT_QUOTES),
+            BASE_PATH,
+            $publicationId
+        );
+    }
+
+    private function getValidateConfirmation($publicationId, $title)
+    {
+        return sprintf(
+            "if(confirm('Validate publication \"%s\"?')) {
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '%s/admin/publications/validate/%d';
+
+                var method = document.createElement('input');
+                method.type = 'hidden';
+                method.name = '_method';
+                method.value = 'POST';
                 form.appendChild(method);
 
                 document.body.appendChild(form);

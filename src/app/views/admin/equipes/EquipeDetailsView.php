@@ -135,7 +135,7 @@ class EquipeDetailsView extends AdminLayout
             'text' => 'Ajouter un membre',
             'size' => 'sm',
             'variant' => 'secondary',
-            'href' => '/equipes/add-member/' . $equipe_id // to change
+            'href' => BASE_PATH.'/admin/equipes/addMember/' . $equipe_id // to change
         ]);
         
         

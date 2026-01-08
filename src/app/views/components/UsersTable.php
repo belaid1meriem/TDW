@@ -174,13 +174,7 @@ class UsersTable {
 
     private function renderUserActions($userId, $user)
     {
-        // $viewButton = Components::Button([
-        //     'text' => 'Activer',
-        //     'size' => 'sm',
-        //     'variant' => 'secondary',
-        //     'href' => '/users/view/' . $userId
-        // ]);
-        
+    
         $editButton = Components::Button([
             'text' => 'Modifier',
             'size' => 'sm',
