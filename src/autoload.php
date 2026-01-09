@@ -3,6 +3,8 @@
 spl_autoload_register(function ($class) {
     $prefixes = [
         'Core\\' => __DIR__ . '/core/',
+        'Core\\AutoCrud\\' => __DIR__ . '/core/AutoCrud/',
+        'Core\\AutoCrud\\Views\\' => __DIR__ . '/core/AutoCrud/Views/',
         'App\\Controllers\\' => __DIR__ . '/app/controllers/',
         'App\\Models\\' => __DIR__ . '/app/models/',
         'App\\Views\\' => __DIR__ . '/app/views/',

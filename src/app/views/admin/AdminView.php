@@ -22,11 +22,11 @@ class AdminView extends AdminLayout
         $titles = [
             ["Gestion des utilisateurs et rôles", "admin/users"],
             ["Gestion des équipes", "admin/equipes"],
-            ["Gestion des projets de recherche", "admin/projects"],
-            ["Gestion des équipements et ressources", "admin/equipment"],
+            ["Gestion des projets de recherche", "admin/projets"],
+            ["Gestion des équipements et ressources", "admin/ressources"],
             ["Gestion des publications et base documentaire", "admin/publications"],
-            ["Gestion des événements et communications", "admin/events"],
-            ["Paramètres généraux de l’application", "admin/settings"]
+            ["Gestion des événements et communications", "admin/evenements"],
+            ["Paramètres généraux de l’application", "admin/configurations"],
         ];
         foreach ($titles as $title) {
             echo Components::Card([

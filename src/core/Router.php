@@ -72,7 +72,12 @@ class Router {
                 $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
                 
                 $this->runMiddleware($route['middleware'], $request, function($request) use ($route, $params) {
-                    $controllerClass = 'App\\Controllers\\' . $route['controller'];
+                    $controllerClass = $route['controller'];
+                    
+                    // Add namespace if not already present
+                    if (strpos($controllerClass, '\\') === false) {
+                        $controllerClass = 'App\\Controllers\\' . $controllerClass;
+                    }
 
                     if (!class_exists($controllerClass)) {
                         $this->handleError(500, "Controller not found: {$controllerClass}");
@@ -137,12 +142,7 @@ class Router {
     private function handleError($code, $message) {
         http_response_code($code);
         
-        if ($code === 404) {
-            // $view = new \App\Views\NotFoundView();
-            // $view->render();
-        } else {
-            // $view = new \App\Views\ErrorView($message);
-            // $view->render();
-        }
+        echo "<h1>{$code} - Error</h1>";
+        echo "<p>{$message}</p>";
     }
 }
