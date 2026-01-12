@@ -4,6 +4,8 @@ namespace Core;
 
 use Core\AutoCrud\CrudEngine;
 use Core\AutoCrud\VirtualModel;
+use Core\Database;
+use PDO;
 
 /**
  * Abstract Model (Domain Service)
@@ -17,6 +19,7 @@ abstract class Model
 {
     protected CrudEngine $crud;
     protected VirtualModel $vm;
+    protected PDO $db;
 
     /**
      * Every Model must provide its VirtualModel
@@ -27,6 +30,7 @@ abstract class Model
     {
         $this->vm = $this->define();
         $this->crud = new CrudEngine($this->vm);
+        $this->db = Database::getConnection();
     }
 
     /**

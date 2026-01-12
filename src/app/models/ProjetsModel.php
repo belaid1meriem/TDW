@@ -37,9 +37,28 @@ class ProjetsModel extends Model
         return $this->crud()->list($filters);
     }
 
-    public function getThemes(){
-        return $this->crud()
+    public function getThemes(): array
+    {
+        
+        $sql = "SELECT DISTINCT theme 
+                FROM projets 
+                WHERE theme IS NOT NULL 
+                AND theme != '' 
+                AND deleted_at IS NULL
+                ORDER BY theme ASC";
+        
+        try {
+            $stmt = $this->db->query($sql);
+            $result = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+            
+            return $result ?: [];
+            
+        } catch (\PDOException $e) {
+            error_log("ProjetsModel::getThemes error: " . $e->getMessage());
+            return [];
+        }
     }
+
 
 
 }
