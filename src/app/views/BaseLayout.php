@@ -28,9 +28,11 @@ abstract class BaseLayout extends View {
             <div class="header-container">
                 <a href="/" class="header-logo">LMCS</a>
                 <nav class="header-nav">
-                    <a href="/">Accueil</a>
-                    <a href="/about">À propos</a>
-                    <a href="/contact">Contact</a>
+                    <a href="">Accueil</a>
+                    <a href="projets">Projets</a>
+                    <a href="publications">Publications</a>
+                    <a href="about">À propos</a>
+                    <a href="contact">Contact</a>
                 </nav>
             </div>
         </header>

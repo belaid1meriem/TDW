@@ -84,4 +84,18 @@ return [
             'status' => 'Statut de disponibilité',
         ],
     ],
+
+    'projets' => [
+        'display_column' => 'title',
+        'label' => 'Projets',
+        
+        'labels' => [
+            'title' => 'Titre du projet',
+            'description' => 'Description du projet',
+            'start_date' => 'Date de début',
+            'end_date' => 'Date de fin',
+            'status' => 'Statut du projet',
+            'chef_id' => 'Chef de projet',
+        ],
+    ],
 ];
