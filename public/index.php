@@ -25,7 +25,7 @@ $router->get('/publications', 'PublicationController', 'index', 'publications');
 $router->get('/projets/{id}', 'ProjetController', 'show', 'projet_show');
 $router->get('/publications/{id}', 'PublicationController', 'show', 'publication_show');
 
-
+$router->get('/admin/equipes/{id}', 'EquipesController', 'show', "autocrud.equipes.show");
 
 // Run the application
 $app->run();

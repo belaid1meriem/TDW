@@ -74,7 +74,7 @@ class Application {
     
     public function run() {
         try {
-            // First, register auto-CRUD routes
+            // rgister auto-CRUD routes
             // These act as "fallback" routes - manual routes will take precedence
             $this->bootstrapAutoCrud();
             

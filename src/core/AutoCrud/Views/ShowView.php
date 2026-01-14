@@ -56,6 +56,18 @@ class ShowView extends View
         
         ob_start();
         ?>
+        <header class="header">
+            <div class="header-container">
+                <a href="/" class="header-logo">LMCS</a>
+                <nav class="header-nav">
+                    <a href="">Accueil</a>
+                    <a href="projets">Projets</a>
+                    <a href="publications">Publications</a>
+                    <a href="about">À propos</a>
+                    <a href="contact">Contact</a>
+                </nav>
+            </div>
+        </header>
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2><?= $this->escape($this->model->getTableLabel()) ?> Details</h2>
             

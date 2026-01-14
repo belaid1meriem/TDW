@@ -44,5 +44,5 @@ return [
     /**
      * Enable debug mode (shows generated routes, etc.)
      */
-    'debug' => false,
+    'debug' => true,
 ];

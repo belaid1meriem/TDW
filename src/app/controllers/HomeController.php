@@ -56,7 +56,6 @@ class HomeController extends Controller
             'stats' => [
                 'publications' => $this->publicationsModel->countValidated(),
                 'projects' => $this->projetsModel->countActive(),
-                'members' => $this->usersModel->countAll(),
                 'teams' => $this->equipesModel->countAll()
             ]
         ];
