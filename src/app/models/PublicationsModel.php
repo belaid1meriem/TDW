@@ -26,4 +26,14 @@ class PublicationsModel extends Model
         $crud = new CrudEngine($this->define());
         return $crud->count(['status' => 'validated']);
     }
+
+    public function getById(int $id): ?array
+    {
+        $crud = new CrudEngine($this->define());
+        return $crud->show($id);
+    }
+
+    public function getAll(array $filters){
+        return $this->crud()->list($filters);
+    }
 }

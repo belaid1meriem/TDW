@@ -59,6 +59,33 @@ class ProjetsModel extends Model
         }
     }
 
+    public function getPublications(int $id): array
+    {
+        $sql = "
+            SELECT pub.*
+            FROM publications pub
+            INNER JOIN publication_projet pp 
+                ON pp.publication_id = pub.id
+            WHERE pp.projet_id = :projet_id
+            AND pub.deleted_at IS NULL
+            ORDER BY pub.publication_date DESC
+        ";
+
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['projet_id' => $id]);
+
+            $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            return $result ?: [];
+
+        } catch (\PDOException $e) {
+            error_log('ProjetsModel::getPublications error: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+
 
 
 }

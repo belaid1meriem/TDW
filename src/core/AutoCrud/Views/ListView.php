@@ -14,8 +14,8 @@ use Core\AutoCrud\VirtualModel;
  */
 class ListView extends View
 {
-    private VirtualModel $model;
-    private array $result;
+    protected VirtualModel $model;
+    protected array $result;
     
     public function __construct(VirtualModel $model, array $result)
     {
@@ -52,7 +52,7 @@ class ListView extends View
         <?php
     }
 
-    private function renderHeader(): string
+    protected function renderHeader(): string
     {
         $createUrl = BASE_PATH . "/admin/{$this->model->table}/create";
         
@@ -71,12 +71,12 @@ class ListView extends View
         return ob_get_clean();
     }
 
-    private function renderFooter(): void
+    protected function renderFooter(): void
     {
-        // Optional footer content can be added here
+        
     }
 
-    private function renderAlerts(): string
+    protected function renderAlerts(): string
     {
         ob_start();
         
@@ -99,7 +99,7 @@ class ListView extends View
         return ob_get_clean();
     }
 
-    private function renderFilters(): string
+    protected function renderFilters(): string
     {
         if (empty($this->model->filters)) {
             return '';
@@ -154,14 +154,14 @@ class ListView extends View
         }
         
         return Components::FilterForm([
-            'action' => BASE_PATH . "/admin/{$this->model->table}",
+            'action' => "",
             'method' => 'GET',
             'fields' => $fields,
             'title' => 'Filters'
         ]);
     }
 
-    private function renderTable(): string
+    protected function renderTable(): string
     {
         return Components::Table([
             'columns' => $this->buildColumns(),
@@ -171,7 +171,7 @@ class ListView extends View
         ]);
     }
 
-    private function buildColumns(): array
+    protected function buildColumns(): array
     {
         $columns = [];
         
@@ -198,7 +198,7 @@ class ListView extends View
         return $columns;
     }
 
-    private function getCellRenderer(string $col, array $meta): ?callable
+    protected function getCellRenderer(string $col, array $meta): ?callable
     {
         // Foreign key - show label instead of ID
         if (isset($this->model->relations[$col])) {
@@ -253,7 +253,7 @@ class ListView extends View
         return fn($value) => $this->escape($value);
     }
 
-    private function renderActions($id, $row): string
+    protected function renderActions($id, $row): string
     {
         $showUrl = BASE_PATH . "/admin/{$this->model->table}/{$id}";
         $editUrl = BASE_PATH . "/admin/{$this->model->table}/{$id}/edit";
@@ -284,7 +284,7 @@ class ListView extends View
         return "<div class='flex gap-2'>{$showBtn} {$editBtn} {$deleteBtn}</div>";
     }
 
-    private function renderPagination(): string
+    protected function renderPagination(): string
     {
         $total = $this->result['total'];
         $page = $this->result['page'];
@@ -323,7 +323,7 @@ class ListView extends View
         return ob_get_clean();
     }
 
-    private function getDeleteConfirmation($id): string
+    protected function getDeleteConfirmation($id): string
     {
         $url = BASE_PATH . "/admin/{$this->model->table}/{$id}";
         
@@ -343,13 +343,13 @@ class ListView extends View
         }";
     }
 
-    private function getForeignKeyOptions(array $relation): array
+    protected function getForeignKeyOptions(array $relation): array
     {
         $resolver = \Core\AutoCrud\ForeignKeyResolver::getInstance();
         return $resolver->getOptions($relation);
     }
 
-    private function getEnumVariant(string $value): string
+    protected function getEnumVariant(string $value): string
     {
         $variantMap = [
             'active' => 'success',
@@ -364,7 +364,7 @@ class ListView extends View
         return $variantMap[strtolower($value)] ?? 'default';
     }
 
-    private function getPrimaryKeyColumn(): string
+    protected function getPrimaryKeyColumn(): string
     {
         $pk = $this->model->primaryKey;
         return is_array($pk) ? $pk[0] : $pk;

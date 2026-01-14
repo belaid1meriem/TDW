@@ -28,6 +28,7 @@ class VirtualModel
 
     private function __construct(string $table, array $config = [])
     {
+        if(!$config) $config = VirtualModel::loadTableConfig($table);
         $this->table = $table;
         $this->config = $config;
         $this->inspector = new SchemaInspector();
@@ -96,6 +97,24 @@ class VirtualModel
                 $this->config['relations']
             );
         }
+    }
+
+    protected static function loadTableConfig(string $table): array
+    {
+        $configFile = BASE_DIR . '/src/app/config/tables.php';
+        
+        if (!file_exists($configFile)) {
+            return [];
+        }
+
+        
+        $allConfig = require $configFile;
+
+        $defaultConfig = $allConfig['default'] ?? [];
+        $tableConfig = $allConfig[$table] ?? [];
+        $allConfig[$table] = $tableConfig + $defaultConfig;
+
+        return $allConfig[$table] ?? [];
     }
 
     /**

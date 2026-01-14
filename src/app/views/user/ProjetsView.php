@@ -1,12 +1,13 @@
 <?php
+
 namespace App\Views\User;
 
-use App\Views\BaseLayout;
 
-class ProjetsView extends BaseLayout{
-
-    public function renderContent()
-    {
-        
-    }
+class ProjetsView extends UserListView
+{
+    // private $projets;
+    // private $themes;
+    // private $supervisors;
+    // private $filters;
+    
 }

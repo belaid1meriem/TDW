@@ -14,9 +14,9 @@ use Core\AutoCrud\ForeignKeyResolver;
  */
 class ShowView extends View
 {
-    private VirtualModel $model;
-    private array $record;
-    private ForeignKeyResolver $fkResolver;
+    protected VirtualModel $model;
+    protected array $record;
+    protected ForeignKeyResolver $fkResolver;
     
     public function __construct(VirtualModel $model, array $record)
     {
@@ -41,13 +41,14 @@ class ShowView extends View
             <main class="flex flex-col gap-6">
                 <?= $this->renderHeader() ?>
                 <?= $this->renderDetails() ?>
+                
             </main>
         </body>
         </html>
         <?php
     }
 
-    private function renderHeader(): string
+    protected function renderHeader(): string
     {
         $pkValue = $this->getPrimaryKeyValue();
         $backUrl = BASE_PATH . "/admin/{$this->model->table}";
@@ -76,7 +77,7 @@ class ShowView extends View
         return ob_get_clean();
     }
 
-    private function renderDetails(): string
+    protected function renderDetails(): string
     {
         $sections = $this->groupColumnsIntoSections();
         
@@ -92,7 +93,7 @@ class ShowView extends View
         return ob_get_clean();
     }
 
-    private function groupColumnsIntoSections(): array
+    protected function groupColumnsIntoSections(): array
     {
         $sections = ['Details' => []];
         
@@ -108,7 +109,7 @@ class ShowView extends View
         return $sections;
     }
 
-    private function renderSectionFields(array $columns): string
+    protected function renderSectionFields(array $columns): string
     {
         ob_start();
         ?>
@@ -124,7 +125,7 @@ class ShowView extends View
         return ob_get_clean();
     }
 
-    private function renderField(string $col, array $meta): string
+    protected function renderField(string $col, array $meta): string
     {
         $label = $this->model->getLabel($col);
         $value = $this->formatValue($col, $meta);
@@ -139,7 +140,7 @@ class ShowView extends View
         return ob_get_clean();
     }
 
-    private function formatValue(string $col, array $meta): string
+    protected function formatValue(string $col, array $meta): string
     {
         $value = $this->record[$col] ?? null;
         
@@ -192,7 +193,7 @@ class ShowView extends View
         return $this->escape($value);
     }
 
-    private function getEnumVariant(string $value): string
+    protected function getEnumVariant(string $value): string
     {
         $variantMap = [
             'active' => 'success',
@@ -207,7 +208,7 @@ class ShowView extends View
         return $variantMap[strtolower($value)] ?? 'default';
     }
 
-    private function getPrimaryKeyValue(): mixed
+    protected function getPrimaryKeyValue(): mixed
     {
         $pk = is_array($this->model->primaryKey) 
             ? $this->model->primaryKey[0] 
@@ -216,7 +217,7 @@ class ShowView extends View
         return $this->record[$pk] ?? null;
     }
 
-    private function isLastColumn(string $col, array $columns): bool
+    protected function isLastColumn(string $col, array $columns): bool
     {
         $keys = array_keys($columns);
         return $col === end($keys);

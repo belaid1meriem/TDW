@@ -14,16 +14,16 @@ $router = $app->router();
 
 $router->get('/login', 'AuthController', 'showLogin', 'login');
 $router->post('/login', 'AuthController', 'login');
-// $router->post('/logout', 'AuthController', 'logout');
+$router->post('/logout', 'AuthController', 'logout');
 
 $router->get('/admin', 'AdminController', 'dashboard', 'admin');
-
+$router->get('/profile', 'ProfileController', 'index', 'profile');
 
 $router->get('/', 'HomeController', 'index', 'home');
 $router->get('/projets', 'ProjetController', 'index', 'projets');
 $router->get('/publications', 'PublicationController', 'index', 'publications');
-$router->get('/projet/:id', 'ProjetController', 'show', 'projet_show');
-$router->get('/publication/:id', 'PublicationController', 'show', 'publication_show');
+$router->get('/projets/{id}', 'ProjetController', 'show', 'projet_show');
+$router->get('/publications/{id}', 'PublicationController', 'show', 'publication_show');
 
 
 

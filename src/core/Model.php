@@ -44,7 +44,7 @@ abstract class Model
     /**
      * Expose VirtualModel (metadata)
      */
-    protected function vm(): VirtualModel
+    public function vm(): VirtualModel
     {
         return $this->vm;
     }

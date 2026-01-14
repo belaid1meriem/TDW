@@ -2,18 +2,18 @@
 namespace App\Controllers;
 use Core\Session;
 use Core\Validator;
-use App\Models\UserModel;
+use App\Models\UsersModel;
 use App\Views\LoginView;
 use Core\Controller;
 use Core\Request;
 use App\Models\RoleModel;
 
 class AuthController extends Controller {
-    private UserModel $userModel;
+    private UsersModel $UsersModel;
 
     public function __construct(Request $request) {
         parent::__construct($request);
-        $this->userModel = new UserModel();
+        $this->UsersModel = new UsersModel();
     }
 
 
@@ -44,7 +44,7 @@ class AuthController extends Controller {
         $identifier = $this->request->input('identifier');
         $password = $this->request->input('password');
 
-        $user = $this->userModel->verifyPassword($identifier, $password);
+        $user = $this->UsersModel->verifyPassword($identifier, $password);
 
         if (!$user) {
             Session::flash('error', 'Invalid credentials');
@@ -61,7 +61,7 @@ class AuthController extends Controller {
 
         // Always set remember token for persistent session
         $token = bin2hex(random_bytes(32));
-        $this->userModel->updateRememberToken($user['id'], $token);
+        $this->UsersModel->updateRememberToken($user['id'], $token);
         
         // Set cookie for 30 days (persistent session)
         setcookie('remember_token', $token, time() + (86400 * 30), '/', '', false, true);
@@ -90,7 +90,7 @@ class AuthController extends Controller {
         
         // Remove remember token
         if ($userId && isset($_COOKIE['remember_token'])) {
-            $this->userModel->updateRememberToken($userId, null);
+            $this->UsersModel->updateRememberToken($userId, null);
             setcookie('remember_token', '', time() - 3600, '/');
         }
 
